@@ -158,27 +158,26 @@ router.delete("/:bookId", (req, res, next) => {
   //delete input validation
   try {
     const { bookId } = req.params;
+    //delete processing logic
+    let db = fs.readFileSync("db.json", "utf-8");
+    db = JSON.parse(db);
+    const { books } = db;
+    //find book by id
+    const targetIndex = books.findIndex((book) => book.id === bookId);
+    if (targetIndex < 0) {
+      const exception = new Error(`book not found`);
+      exception.statusCode = 404;
+      throw exception;
+    }
+    //filter db books obj
+    db.books = books.filter((book) => book.id !== bookId);
+    db = JSON.stringify(db);
+    fs.writeFileSync("db.json", db);
+    //delete send response
+    res.status(200).send({});
   } catch (error) {
     next(error);
   }
-
-  //delete processing logic
-  let db = fs.readFileSync("db.json", "utf-8");
-  db = JSON.parse(db);
-  const { books } = db;
-  //find book by id
-  const targetIndex = books.findIndex((book) => book.id === bookId);
-  if (targetIndex < 0) {
-    const exception = new Error(`book not found`);
-    exception.statusCode = 404;
-    throw exception;
-  }
-  //filter db books obj
-  db.books = books.filter((book) => book.id !== bookId);
-  db = JSON.stringify(db);
-  fs.writeFileSync("db.json", db);
-  //delete send response
-  res.status(200).send({});
 });
 
 module.exports = router;
