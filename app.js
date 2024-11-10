@@ -23,6 +23,7 @@ app.use((req, res, next) => {
   next(exception); // Chuyển lỗi đến middleware tiếp theo
 });
 app.use((err, req, res, next) => {
-  res.status(err.statusCode).send(err.message);
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).send(err.message);
 });
 module.exports = app;

@@ -28,34 +28,28 @@ router.get("/", (req, res, next) => {
       }
       if (!filterQuery[key]) delete filterQuery[key];
     });
+    let offset = limit * (page - 1);
+    let db = fs.readFileSync("db.json", "utf-8");
+    db = JSON.parse(db);
+    const { books } = db;
+    let result = [];
+    if (filterKeys.length) {
+      filterKeys.forEach((condition) => {
+        result = result.length
+          ? result.filter((book) => book[condition] === filterQuery[conditon])
+          : books.filter((book) => book[condition] === filterQuery[condition]);
+      });
+    } else {
+      result = books;
+    }
+    console.log(result);
+
+    result = result.slice(offset, offset + limit);
+
+    res.status(200).send(result);
   } catch (error) {
     next(error);
   }
-
-  let offset = limit * (page - 1);
-
-  let db = fs.readFileSync("db.json", "utf-8");
-
-  db = JSON.parse(db);
-
-  const { books } = db;
-
-  let result = [];
-
-  if (filterKeys.length) {
-    filterKeys.forEach((condition) => {
-      result = result.length
-        ? result.filter((book) => book[condition] === filterQuery[conditon])
-        : books.filter((book) => book[condition] === filterQuery[condition]);
-    });
-  } else {
-    result = books;
-  }
-  console.log(result);
-
-  result = result.slice(offset, offset + limit);
-
-  res.status(200).send(result);
 });
 
 // post
